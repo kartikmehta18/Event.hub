@@ -11,7 +11,7 @@ import Footer from "@/components/footer"
 import { getEvents } from "@/lib/actions"
 
 export default async function Home() {
-  const events = await getEvents()
+  const events: { id: string; date: string }[] = await getEvents()
 
   // Sort events by date (upcoming first)
   const sortedEvents = [...events].sort((a, b) => {
@@ -26,7 +26,7 @@ export default async function Home() {
   const featuredEvent = upcomingEvents.length > 0 ? upcomingEvents[0] : events.length > 0 ? events[0] : null
 
   // Get other events (excluding the featured one)
-  const otherEvents = featuredEvent ? events.filter((event) => event.id !== featuredEvent.id).slice(0, 6) : []
+  const otherEvents = featuredEvent ? events.filter((event: { id: string; date: string }) => event.id !== featuredEvent.id).slice(0, 6) : []
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-white">

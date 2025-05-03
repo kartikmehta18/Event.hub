@@ -32,13 +32,13 @@ export async function verifyToken(token: string) {
 }
 
 export async function getSession() {
-  const cookieStore = cookies()
-  const token = cookieStore.get("token")?.value
+  const cookieStore = await cookies(); // Await cookies API
+  const token = cookieStore.get("token")?.value;
 
-  if (!token) return null
+  if (!token) return null;
 
-  const payload = await verifyToken(token)
-  if (!payload) return null
+  const payload = await verifyToken(token);
+  if (!payload || typeof payload !== "object") return null; // Ensure payload is an object
 
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
@@ -48,9 +48,9 @@ export async function getSession() {
       lastName: true,
       email: true,
     },
-  })
+  });
 
-  return user
+  return user;
 }
 
 export async function requireAuth() {

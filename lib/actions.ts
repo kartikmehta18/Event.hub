@@ -48,14 +48,15 @@ export async function registerUser(formData: FormData) {
 
   // Create token and set cookie
   const token = await createToken(user.id)
-  cookies().set({
+  const cookiesInstance = cookies();
+  await cookiesInstance.set({
     name: "token",
     value: token,
     httpOnly: true,
     path: "/",
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24 * 7, // 1 week
-  })
+  });
 
   return { success: true }
 }
@@ -82,14 +83,15 @@ export async function loginUser(formData: FormData) {
 
   // Create token and set cookie
   const token = await createToken(user.id)
-  cookies().set({
+  const cookiesInstance = cookies();
+  await cookiesInstance.set({
     name: "token",
     value: token,
     httpOnly: true,
     path: "/",
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24 * 7, // 1 week
-  })
+  });
 
   return { success: true }
 }
@@ -148,13 +150,17 @@ export async function submitEvent(formData: FormData) {
 
 // Function to get all events
 export async function getEvents() {
-  const events = await prisma.event.findMany({
-    orderBy: {
-      date: "asc",
-    },
-  })
-
-  return events
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: {
+        date: "asc",
+      },
+    });
+    return events;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw new Error("Failed to fetch events");
+  }
 }
 
 // Function to get a specific event by ID
