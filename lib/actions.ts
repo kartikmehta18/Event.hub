@@ -98,8 +98,17 @@ export async function loginUser(formData: FormData) {
 
 // Function to logout a user
 export async function logoutUser() {
-  cookies().delete("token")
-  redirect("/")
+  cookies().delete("token");
+
+  // Revalidate the session and paths to ensure UI updates immediately
+  revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath("/profile");
+
+  // Reload the page after logout
+  if (typeof window !== "undefined") {
+    window.location.reload();
+  }
 }
 
 // Function to submit a new event
